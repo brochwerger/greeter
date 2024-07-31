@@ -1,0 +1,15 @@
+FROM golang:1.20-alpine AS build
+
+ENV GO111MODULE=on
+
+WORKDIR /app/
+COPY ./hello.go .
+COPY stress/ ./stress/
+
+RUN go mod init greeter
+RUN go mod tidy
+RUN go build .
+
+FROM scratch
+COPY --from=build /app/greeter /bin/greeter
+ENTRYPOINT ["/bin/greeter"]
